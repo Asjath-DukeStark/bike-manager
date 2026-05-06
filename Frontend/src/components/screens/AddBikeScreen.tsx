@@ -19,6 +19,7 @@ export function AddBikeScreen({ onSave, initialBike, onCancel }: { onSave: (bike
   
   const [directCost, setDirectCost] = useState(initialBike?.buying.directCost.toString() || '');
   const [additionalCosts, setAdditionalCosts] = useState<AdditionalCost[]>(initialBike?.additionalCosts || []);
+  const [isSaving, setIsSaving] = useState(false);
 
   const [addingCost, setAddingCost] = useState(false);
   const [costType, setCostType] = useState('Tire');
@@ -46,10 +47,12 @@ export function AddBikeScreen({ onSave, initialBike, onCancel }: { onSave: (bike
     setAdditionalCosts(additionalCosts.filter(c => c.id !== id));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!model || !bikeNumber || !ownerNic || !directCost || !date) return;
+    if (!model || !bikeNumber || !ownerNic || !directCost || !date || isSaving) return;
 
+    setIsSaving(true);
+    
     const newBike: Bike = {
       ...initialBike,
       id: initialBike?.id || crypto.randomUUID(),
@@ -74,7 +77,11 @@ export function AddBikeScreen({ onSave, initialBike, onCancel }: { onSave: (bike
       status: initialBike?.status || "In Stock"
     } as Bike;
 
-    onSave(newBike);
+    try {
+      await onSave(newBike);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -204,8 +211,12 @@ export function AddBikeScreen({ onSave, initialBike, onCancel }: { onSave: (bike
           </div>
           
           <div className="pb-12 pt-2">
-            <button type="submit" className="w-full bg-slate-900 text-white font-bold rounded-xl px-4 py-4 shadow-xl shadow-slate-900/20 hover:bg-slate-800 transition-colors active:scale-[0.98]">
-              {initialBike ? 'Save Changes' : 'Register Bike'}
+            <button
+              type="submit"
+              disabled={isSaving}
+              className="w-full bg-slate-900 text-white font-bold rounded-xl px-4 py-4 shadow-lg shadow-slate-900/20 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSaving ? "Saving..." : (initialBike ? "Update Bike" : "Save Bike")}
             </button>
           </div>
         </form>

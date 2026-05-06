@@ -13,10 +13,11 @@ export function SellingFormScreen({ bike, onBack, onSave }: { bike: Bike, onBack
   const [documents, setDocuments] = useState<string[]>(bike.selling?.buyer?.documents || []);
   
   const [notes, setNotes] = useState(bike.selling?.notes || '');
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!sellingPrice || !soldDate || !buyerNic) return;
+    if (!sellingPrice || !soldDate || !buyerNic || isSaving) return;
 
     const updatedBike: Bike = {
       ...bike,
@@ -34,7 +35,12 @@ export function SellingFormScreen({ bike, onBack, onSave }: { bike: Bike, onBack
       }
     };
 
-    onSave(updatedBike);
+    setIsSaving(true);
+    try {
+      await onSave(updatedBike);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -99,8 +105,12 @@ export function SellingFormScreen({ bike, onBack, onSave }: { bike: Bike, onBack
           </div>
 
           <div className="pb-12 pt-2">
-            <button type="submit" className="w-full bg-slate-900 text-white font-bold rounded-xl px-4 py-4 shadow-xl shadow-slate-900/20 hover:bg-slate-800 transition-colors active:scale-[0.98]">
-              {bike.status === 'Sold' ? 'Save Changes' : 'Confirm Sale'}
+            <button
+              type="submit"
+              disabled={isSaving}
+              className="w-full bg-slate-900 text-white font-bold rounded-xl px-4 py-4 shadow-xl shadow-slate-900/20 hover:bg-slate-800 transition-colors active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSaving ? "Completing Sale..." : (bike.status === 'Sold' ? 'Save Changes' : 'Confirm Sale')}
             </button>
           </div>
         </form>

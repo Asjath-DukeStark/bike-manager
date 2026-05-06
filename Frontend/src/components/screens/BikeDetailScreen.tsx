@@ -1,9 +1,8 @@
-import React from 'react';
-import { ChevronLeft, Download, Edit } from 'lucide-react';
+import { ChevronLeft, Download, Edit, Trash2 } from 'lucide-react';
 import { calculateProfit, calculateTotalCost, classNames, formatCurrency } from '../../lib/utils';
 import { Bike } from '../../types';
 
-export function BikeDetailScreen({ bike, onBack, onSellClick, onEditClick }: { bike: Bike, onBack: () => void, onSellClick: () => void, onEditClick: () => void }) {
+export function BikeDetailScreen({ bike, onBack, onSellClick, onEditClick, onDelete }: { bike: Bike, onBack: () => void, onSellClick: () => void, onEditClick: () => void, onDelete: () => void }) {
   const totalCost = calculateTotalCost(bike);
   const profit = calculateProfit(bike);
 
@@ -19,9 +18,14 @@ export function BikeDetailScreen({ bike, onBack, onSellClick, onEditClick }: { b
           </button>
           <h1 className="text-xl font-bold tracking-tight text-slate-900 ml-2 mt-2">Bike Details</h1>
         </div>
-        <button onClick={onEditClick} className="p-2 -mr-2 text-slate-400 hover:text-slate-900 transition-colors">
-          <Edit size={20} />
-        </button>
+        <div className="flex items-center gap-1">
+          <button onClick={onDelete} className="p-2 text-slate-400 hover:text-red-500 transition-colors mt-2">
+            <Trash2 size={20} />
+          </button>
+          <button onClick={onEditClick} className="p-2 -mr-2 text-slate-400 hover:text-slate-900 transition-colors mt-2">
+            <Edit size={20} />
+          </button>
+        </div>
       </header>
 
       <div className="flex-1 overflow-y-auto px-5 py-6 space-y-6 pb-20">

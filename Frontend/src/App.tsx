@@ -82,6 +82,19 @@ export default function App() {
     }
   };
 
+  const handleDeleteBike = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this bike? This cannot be undone.')) return;
+    try {
+      await bikesApi.delete(id);
+      await fetchBikes();
+      setActiveScreen("Home");
+      setSelectedBikeId(null);
+    } catch (err) {
+      console.error('Failed to delete bike:', err);
+      alert('Failed to delete bike. Please try again.');
+    }
+  };
+
   const handleSellBike = async (updatedBike: Bike) => {
     if (!updatedBike.selling) return;
     try {
@@ -215,6 +228,7 @@ export default function App() {
                 onBack={navigateBack}
                 onSellClick={() => setActiveScreen("Sell")}
                 onEditClick={() => setActiveScreen("Edit")}
+                onDelete={() => handleDeleteBike(selectedBikeId)}
               />
             </motion.div>
           )}
