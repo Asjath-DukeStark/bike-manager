@@ -25,7 +25,7 @@ try {
       console.table(rows);
     }
   }
-} catch (err) {
-  console.error("❌ Error reading database:", err.message);
+} catch (err: any) {
+  console.error("❌ Error reading database:", err.message || err);
   console.log("Tip: Make sure you have added some data or completed the migration first!");
 }

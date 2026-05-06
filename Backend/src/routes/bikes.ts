@@ -6,17 +6,17 @@ import { requireAuth, AuthRequest } from '../middleware/auth.js';
 const router = Router();
 
 // ─── Helper: run a prepared statement returning all rows ──────────────────────
-function queryAll<T>(sql: string, params: unknown[] = []): T[] {
+function queryAll<T>(sql: string, params: any[] = []): T[] {
   const stmt = db.prepare(sql);
   return stmt.all(...params) as T[];
 }
 
-function queryOne<T>(sql: string, params: unknown[] = []): T | undefined {
+function queryOne<T>(sql: string, params: any[] = []): T | undefined {
   const stmt = db.prepare(sql);
   return stmt.get(...params) as T | undefined;
 }
 
-function run(sql: string, params: unknown[] = []) {
+function run(sql: string, params: any[] = []) {
   const stmt = db.prepare(sql);
   return stmt.run(...params);
 }
