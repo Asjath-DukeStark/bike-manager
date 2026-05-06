@@ -27,18 +27,23 @@ if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
 // ─── Middleware ────────────────────────────────────────────────────────────────
 const allowedOrigins = [
-  process.env.FRONTEND_URL || 'http://localhost:3000',
   'http://localhost:3000',
   'http://localhost:5173',
+  'http://localhost:4173',
 ];
+
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL.replace(/\/$/, "")); // Remove trailing slash if any
+}
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (e.g., curl, Postman, mobile apps)
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow if no origin (mobile/curl) or if it's in our allowed list
+    if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes(origin.replace(/\/$/, ""))) {
       callback(null, true);
     } else {
-      callback(new Error(`CORS: Origin "${origin}" is not allowed.`));
+      console.warn(`Blocked CORS for origin: ${origin}`);
+      callback(null, false); // Just block it without crashing
     }
   },
   credentials: true,
